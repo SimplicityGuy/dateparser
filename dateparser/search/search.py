@@ -130,15 +130,12 @@ class _ExactLanguageSearch:
                     for j, jtem in enumerate(split_translated):
                         if len(jtem) <= 2:
                             continue
-
                         parsed_jtem, is_relative_jtem = self.parse_item(
                             parser, jtem, split_translated[j], current_parsed, need_relative_base)
                         current_parsed.append((parsed_jtem, is_relative_jtem))
                         current_substrings.append(split_original[j].strip(' .,:()[]-'))
-
                 possible_parsed.append(current_parsed)
                 possible_substrings.append(current_substrings)
-
             parsed_best, substrings_best = self.choose_best_split(possible_parsed, possible_substrings)
             for k in range(len(parsed_best)):
                 if parsed_best[k][0]['date_obj']:
