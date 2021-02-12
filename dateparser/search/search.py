@@ -87,14 +87,15 @@ class _ExactLanguageSearch:
         return possible_splits
 
     def parse_item(self, parser, item, translated_item, parsed, need_relative_base):
+        relative_base = None
         item = item.replace('ngày', '')
         item = item.replace('am', '')
-        pre_parsed_item = parser.get_date_data(item)
+        parsed_item = parser.get_date_data(item)
         is_relative = date_is_relative(translated_item)
+
         if need_relative_base:
             item, relative_base = self.set_relative_base(item, parsed)
 
-        parsed_item = pre_parsed_item
         if relative_base:
             parser._settings.RELATIVE_BASE = relative_base
             parsed_item = parser.get_date_data(item)
