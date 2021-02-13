@@ -1,4 +1,5 @@
 from datetime import datetime, time
+from pytz import utc
 
 from parameterized import parameterized, param
 from tests import BaseTestCase
@@ -435,6 +436,17 @@ class TestParser(BaseTestCase):
         self.given_settings(settings={'REQUIRE_PARTS': ['year']})
         self.then_error_is_raised_when_date_is_parsed(date_string)
 
+    @parameterized.expand([
+        param(date_string="05:25:55 UTC",
+              expected_date=datetime(datetime.utcnow().year,
+                                     datetime.utcnow().month,
+                                     datetime.utcnow().day, 0, 0, tzinfo=utc))
+    ])
+    def test_time_with_timezone(self, date_string, expected_date):
+        self.given_parser()
+        self.when_date_is_parsed(date_string)
+        self.then_date_exactly_is(expected_date)
+
     def given_parser(self):
         self.parser = _parser
 
@@ -444,13 +456,16 @@ class TestParser(BaseTestCase):
 
     def when_date_is_parsed(self, date_string):
         try:
-            self.parser.parse(date_string, self.settings)
+            self.result = self.parser.parse(date_string, self.settings)
         except Exception as error:
             self.error = error
 
     def then_error_is_raised_when_date_is_parsed(self, date_string):
         with self.assertRaises(ValueError):
             self.parser.parse(date_string, self.settings)
+
+    def then_date_exactly_is(self, expected_date):
+        self.assertEqual(self.result[0], expected_date)
 
 
 class TestTimeParser(BaseTestCase):
